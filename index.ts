@@ -1,19 +1,19 @@
 import {
+  hamToM3U8,
+  hamToMpd,
+  m3u8ToHam,
+  mpdToHam,
+  Presentation,
+  Manifest,
+  getTracksFromPresentation,
+  validateTracks,
+} from "@svta/common-media-library";
+import {
   readFileSync,
   writeFileSync,
   mkdirSync,
   appendFileSync,
 } from "node:fs";
-import {
-  hamToM3U8,
-  hamToMpd,
-  m3u8ToHam,
-  mpdToHam,
-  getTracksFromPresentation,
-  validateTracks,
-  Presentation,
-} from "@svta/common-media-library";
-import { Manifest } from "@svta/common-media-library/cmaf/utils/types/Manifest.js";
 
 const OUTPUT_DIR = "./output";
 const INPUT_DIR = "./input";
@@ -57,9 +57,9 @@ function writeManifestOutput(input: string, manifest: Manifest, isMain?) {
   manifest.ancillaryManifests?.forEach((m) => writeManifestOutput(input, m));
 }
 
-function checkValidity(presentation: Presentation) {
+function checkTracksValidity(presentation: Presentation) {
   const validation = validateTracks(getTracksFromPresentation(presentation));
-  console.log("######### INPUT TRACKS VALIDATION ########");
+  console.log("\n######### INPUT TRACKS VALIDATION ########");
   console.log(
     "At least one segment: ",
     validation.description.atLeastOneSegment
@@ -70,40 +70,46 @@ function checkValidity(presentation: Presentation) {
   );
   validation.tracksWithErrors.length > 0 &&
     console.log("Track IDs without segments: ", validation.tracksWithErrors);
-  console.log("######### INPUT TRACKS VALIDATION ENDED ########");
+  console.log("######### INPUT TRACKS VALIDATION ENDED ########\n");
   return validation;
 }
 
-function fromMpdToHam(input: string) {
+function readFile(path: string) {
   let data: string;
 
   try {
-    data = readFileSync(`${INPUT_DIR}/dash/${input}.mpd`, {
+    data = readFileSync(path, {
       encoding: "utf8",
       flag: "r",
     });
   } catch (error) {
-    console.error(`File ${input} not found.`);
+    console.error(`File ${path} not found.`);
     return;
   }
 
+  return data;
+}
+
+function fromMpdToHam(input: string) {
+  let data: string = readFile(`${INPUT_DIR}/mpd/${input}.mpd`);
   // Convert the input to HAM Object.
-  const hamObject = mpdToHam(data);
+  const presentations = mpdToHam(data);
   // Validate tracks
-  const validation = checkValidity(hamObject.at(0));
+  const validation = checkTracksValidity(presentations.at(0));
 
   if (validation.status) {
     // Convert the HAM Object to MPD content.
-    const mpdManifest = hamToMpd(hamObject);
+    const mpdManifest = hamToMpd(presentations);
     // Convert the HAM Object to HLS content.
-    const hlsManifest = hamToM3U8(hamObject);
+    const hlsManifest = hamToM3U8(presentations);
     // Write the outputs
     writeManifestOutput(input, mpdManifest, true);
     writeManifestOutput(input, hlsManifest, true);
   }
+
   writeFileSync(
-    `${OUTPUT_DIR}/ham/${input}-ham.json`,
-    JSON.stringify(hamObject)
+    `${OUTPUT_DIR}/ham/${input}-json`,
+    JSON.stringify(presentations)
   );
 }
 
