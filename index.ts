@@ -5,15 +5,14 @@ import {
   appendFileSync,
 } from "node:fs";
 import {
-  hamToM3U8,
-  hamToMpd,
-  m3u8ToHam,
-  mpdToHam,
+  hamToHls,
+  hamToDash,
+  hlsToHam,
+  dashToHam,
   getTracksFromPresentation,
   validateTracks,
   Presentation,
 } from "@svta/common-media-library";
-import { Manifest } from "@svta/common-media-library/cmaf/utils/types/Manifest.js";
 
 const OUTPUT_DIR = "./output";
 const INPUT_DIR = "./input";
@@ -88,15 +87,15 @@ function fromMpdToHam(input: string) {
   }
 
   // Convert the input to HAM Object.
-  const hamObject = mpdToHam(data);
+  const hamObject = dashToHam(data);
   // Validate tracks
   const validation = checkValidity(hamObject.at(0));
 
   if (validation.status) {
     // Convert the HAM Object to MPD content.
-    const mpdManifest = hamToMpd(hamObject);
+    const mpdManifest = hamToDash(hamObject);
     // Convert the HAM Object to HLS content.
-    const hlsManifest = hamToM3U8(hamObject);
+    const hlsManifest = hamToHls(hamObject);
     // Write the outputs
     writeManifestOutput(input, mpdManifest, true);
     writeManifestOutput(input, hlsManifest, true);
@@ -114,11 +113,11 @@ function fromM3u8ToHam(main: string, playlists: string[]) {
   });
 
   // Convert m3u8 to ham object
-  const hamObject = m3u8ToHam(mainManifest, ancillaryManifests);
+  const hamObject = hlsToHam(mainManifest, ancillaryManifests);
   console.log("M3U8 has been converted to ham object.");
 
   //Convert ham object to m3u8
-  const hlsManifest = hamToM3U8(hamObject);
+  const hlsManifest = hamToHls(hamObject);
   console.log("m3u8 object has been created.");
 
   //Write output
