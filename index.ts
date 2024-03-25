@@ -10,6 +10,7 @@ import { FILE_ENCODING, HLS_EXTENSION, OUTPUT_DIR ,MANIFEST_TEST } from "./const
 function testInteroperability(dirMainManifest:string, dirAncillaryManifests?:string[]){
   //Read manifests
   const manifest = fs.readFileSync(dirMainManifest, FILE_ENCODING);
+  console.log(manifest);
   const ancillaryManifests = dirAncillaryManifests?.map((ancillaryManifest) => fs.readFileSync(ancillaryManifest, FILE_ENCODING));
 
   //Convert the manifest to HAM
@@ -19,7 +20,7 @@ function testInteroperability(dirMainManifest:string, dirAncillaryManifests?:str
   if (!fs.existsSync(OUTPUT_DIR)) {
     fs.mkdirSync(OUTPUT_DIR);
   }
-  
+
   fs.writeFileSync(`${OUTPUT_DIR}/ham.json`, JSON.stringify(ham));
 
   //Convert the HAM to DASH
