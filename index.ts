@@ -14,6 +14,12 @@ function testInteroperability(dirMainManifest:string, dirAncillaryManifests?:str
 
   //Convert the manifest to HAM
   const ham = dirMainManifest.endsWith(HLS_EXTENSION) ? hlsToHam(manifest,ancillaryManifests) : dashToHam(manifest);
+
+  //Create output directory if it doesn't exist
+  if (!fs.existsSync(OUTPUT_DIR)) {
+    fs.mkdirSync(OUTPUT_DIR);
+  }
+  
   fs.writeFileSync(`${OUTPUT_DIR}/ham.json`, JSON.stringify(ham));
 
   //Convert the HAM to DASH
