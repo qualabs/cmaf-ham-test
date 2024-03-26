@@ -5,7 +5,7 @@ import {
   dashToHam,
 } from "@svta/common-media-library";
 import fs from 'fs';
-import { FILE_ENCODING, HLS_EXTENSION, OUTPUT_DIR ,MANIFEST_TEST } from "./constants.js";
+import { FILE_ENCODING, HLS_EXTENSION, OUTPUT_DIR ,MANIFEST_TEST, PLAYLISTS_TESTS } from "./constants.js";
 
 function testInteroperability(dirMainManifest:string, dirAncillaryManifests?:string[]){
   //Read manifests
@@ -42,5 +42,5 @@ function testInteroperability(dirMainManifest:string, dirAncillaryManifests?:str
   });
 }
 
-testInteroperability(MANIFEST_TEST);
+testInteroperability(MANIFEST_TEST,PLAYLISTS_TESTS);
 
