@@ -14,7 +14,7 @@ DASH
 
 | #   | DASH | HLS    |
 | --- | ---- | --- |
-| 1   |    X  |   X  |
+| 1   |    ok  |   ok  |
 | 2   |    ok  |    ok |
 | 3   |    ok  |   ok |
 | 4   |   ok   |  ok
