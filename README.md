@@ -17,4 +17,4 @@ DASH
 | 1   |    X  |   X  |
 | 2   |    X  |    x |
 | 3   |    ok  |   ok |
-| 4   |  |  ok   |  ok
+| 4   |   ok   |  ok
